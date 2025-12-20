@@ -1,0 +1,11 @@
+# Pretrained GAN Generator Weights
+
+This directory provides **pretrained generator weights** for the
+conditional GAN used in the shadow puppet animation generation module.
+The released weights enable users to **reproduce qualitative results
+and run inference** without retraining the model from scratch.
+
+---
+
+## Provided Model Files
+
