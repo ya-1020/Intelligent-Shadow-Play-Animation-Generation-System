@@ -1,0 +1,34 @@
+# PaddleHub configuration file for keypoint extraction
+# Used for shadow puppet action analysis
+
+paddlehub:
+  version: 2.3.0
+
+model:
+  name: openpose_body25
+  description: >
+    OpenPose-based pose estimation model with 25 body keypoints.
+    Pretrained on the COCO dataset.
+
+runtime:
+  device: gpu
+  gpu_id: 0
+  use_gpu: true
+
+input:
+  image_format: BGR
+  supported_extensions:
+    - .jpg
+    - .png
+
+output:
+  keypoint_format: json
+  save_confidence_score: true
+
+processing:
+  max_persons: 1
+  normalize_coordinates: true
+  coordinate_range: [0, 1]
+
+reproducibility:
+  random_seed: 42
