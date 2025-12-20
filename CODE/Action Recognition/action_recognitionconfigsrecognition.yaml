@@ -1,0 +1,49 @@
+# Action recognition configuration
+# HRNet-W32 + AAM for shadow puppet action recognition
+
+experiment:
+  name: hrnet_aam_action_recognition
+  description: >
+    Action recognition using HRNet-W32 with Attention Augmentation Module (AAM)
+    based on pose heatmap inputs.
+
+data:
+  input_type: heatmap
+  heatmap_format: npy
+  num_keypoints: 25
+  image_size: 256
+  train_split: 0.8
+  val_split: 0.1
+  test_split: 0.1
+  random_seed: 42
+
+model:
+  backbone: HRNet-W32
+  use_aam: true
+  aam_reduction_ratio: 16
+  num_classes: NUM_CLASSES_PLACEHOLDER
+
+training:
+  optimizer: Adam
+  batch_size: 4
+  initial_learning_rate: 0.0002
+  weight_decay: 0.0
+  max_epochs: 200
+  early_stopping:
+    enabled: true
+    patience: 15
+  loss_function: CrossEntropyLoss
+
+evaluation:
+  primary_metric: action_classification_accuracy
+  report_per_class_accuracy: false
+  save_best_model: true
+
+runtime:
+  device: cuda
+  num_workers: 4
+  pin_memory: true
+
+reproducibility:
+  random_seed: 42
+  deterministic: true
