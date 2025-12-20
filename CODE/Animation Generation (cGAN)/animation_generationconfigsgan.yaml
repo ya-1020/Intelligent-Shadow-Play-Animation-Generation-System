@@ -1,0 +1,105 @@
+# =========================================
+# GAN Configuration File
+# Shadow Puppet Animation Generation
+# =========================================
+
+# -----------------------------
+# General settings
+# -----------------------------
+seed: 42
+device: cuda
+
+# -----------------------------
+# Dataset settings
+# -----------------------------
+dataset:
+  heatmap_dir: data/heatmaps
+  image_dir: data/images
+  image_size: 256
+  train_ratio: 0.8
+  val_ratio: 0.1
+  test_ratio: 0.1
+
+# -----------------------------
+# Generator (U-Net)
+# -----------------------------
+generator:
+  type: UNet
+  in_channels: 17        # number of pose keypoints heatmaps
+  out_channels: 3        # RGB output
+  encoder_channels: [64, 128, 256, 512]
+  use_instance_norm: true
+  use_spectral_norm: true
+  activation:
+    encoder: leaky_relu
+    decoder: relu
+    output: tanh
+
+# -----------------------------
+# Discriminator (PatchGAN)
+# -----------------------------
+discriminator:
+  type: PatchGAN
+  patch_size: 70
+  in_channels: 17        # pose heatmaps
+  image_channels: 3
+  channels: [64, 128, 256, 512]
+  use_instance_norm: true
+  use_spectral_norm: true
+  activation: leaky_relu
+
+# -----------------------------
+# Training settings
+# -----------------------------
+training:
+  epochs: 200
+  batch_size: 4
+  optimizer: Adam
+  learning_rate: 2.0e-4
+  betas: [0.5, 0.999]
+  early_stopping:
+    enabled: true
+    patience: 15
+    monitor: generator_loss
+
+# -----------------------------
+# Loss weights
+# -----------------------------
+loss:
+  gan_loss: BCEWithLogits
+  l1_loss_weight: 100.0
+  keypoint_loss_weight: 0.0   # reserved for future extension
+
+# -----------------------------
+# Training stabilization strategies
+# (used in ablation studies)
+# -----------------------------
+stabilization:
+  spectral_normalization: true
+  instance_noise:
+    enabled: false
+    std: 0.05
+  label_smoothing:
+    enabled: false
+    real_label: 0.9
+  progressive_training:
+    enabled: false
+    start_resolution: 128
+    final_resolution: 256
+
+# -----------------------------
+# Checkpoint and logging
+# -----------------------------
+logging:
+  output_dir: outputs/gan
+  save_interval: 10
+  save_best_only: true
+  log_interval: 50
+
+# -----------------------------
+# Inference settings
+# -----------------------------
+inference:
+  checkpoint: outputs/gan/generator_best.pth
+  input_heatmap_dir: data/heatmaps_test
+  output_image_dir: outputs/gan/results
